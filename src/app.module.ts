@@ -11,7 +11,10 @@ import { dataSourceOptions } from 'db/data-source';
     ConfigModule.forRoot({
       isGlobal: true
     }),
-    TypeOrmModule.forRoot(dataSourceOptions),
+    TypeOrmModule.forRoot({
+      ...dataSourceOptions,
+      autoLoadEntities: true
+    }),
     FeedModule
   ],
   controllers: [AppController],
