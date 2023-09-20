@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FeedModule } from './feed/feed.module';
 import { dataSourceOptions } from 'db/data-source';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { dataSourceOptions } from 'db/data-source';
       ...dataSourceOptions,
       autoLoadEntities: true
     }),
-    FeedModule
+    FeedModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
