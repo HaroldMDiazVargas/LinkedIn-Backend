@@ -1,9 +1,8 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { User } from '../models/user.interface';
 import { Observable, map } from 'rxjs';
 import { AuthService } from '../services/auth.service';
-import { LocalAuthGuard } from '../guards/local.guard';
-import { AuthenticatedGuard } from '../guards/authenticated.guard';
+import { AuthenticatedGuard, LocalAuthGuard } from '../guards';
 
 @Controller('auth')
 export class AuthController {
@@ -19,13 +18,13 @@ export class AuthController {
 
     @UseGuards(LocalAuthGuard)
     @Post('login')
-    login(@Body() user: User, @Req() req: any): User{
+    login(@Body() user: User, @Request() req): User{
         return req.user;
     }
 
     @UseGuards(AuthenticatedGuard)
     @Get('profile')
-    profile(@Req() req){
+    profile(@Request() req){
         return {
             msg: "U are auth",
             user: req.user
@@ -33,7 +32,7 @@ export class AuthController {
     }
 
     @Post('logout')
-    logout(@Req() req){
+    logout(@Request() req){
         req.session.destroy();
         return {
             msg: 'Session destrouied'
