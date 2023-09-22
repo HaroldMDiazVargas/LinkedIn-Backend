@@ -4,19 +4,27 @@ import { AuthController } from './controllers/auth.controller';
 import { UserEntity } from './models/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './strategies/jwt.strategy';
+// import { JwtStrategy } from './strategies/jwt.strategy';
+import { PassportModule } from '@nestjs/passport';
+import { LocalStrategy } from './strategies/local.strategy';
+import { SessionSerializer } from './serializers/session.serializer';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEntity]),
-    JwtModule.registerAsync({
+    PassportModule.registerAsync({
       useFactory: () => ({
-        secret: process.env.JWT_SECRET,
-        signOptions: { expiresIn: '3600s'}
+        session: true
       })
     })
+    // JwtModule.registerAsync({
+    //   useFactory: () => ({
+    //     secret: process.env.JWT_SECRET,
+    //     signOptions: { expiresIn: '3600s'}
+    //   })
+    // })
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, LocalStrategy, SessionSerializer], //JwtStrategy
   controllers: [AuthController]
 })
 export class AuthModule {}
