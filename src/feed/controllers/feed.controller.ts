@@ -3,9 +3,12 @@ import { FeedService } from '../services/feed.service';
 import { FeedPost } from '../models/post.interface';
 import { Observable } from 'rxjs';
 import { DeleteResult, UpdateResult } from 'typeorm';
-import { AuthenticatedGuard } from 'src/auth/guards';
+import { AuthenticatedGuard, RolesGuard } from 'src/auth/guards';
+import { Roles } from 'src/auth/decorator/roles.decorator';
+import { Role } from 'src/auth/models/role.enum';
 
-@UseGuards(AuthenticatedGuard)
+@Roles(Role.ADMIN, Role.PREMIUM)
+@UseGuards(AuthenticatedGuard, RolesGuard)
 @Controller('feed')
 export class FeedController {
     
