@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, Res, UseGuards } from '@nestjs/common';
 import { User } from '../models/user.interface';
 import { Observable, map } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { AuthenticatedGuard, LocalAuthGuard } from '../guards';
+import { Session } from 'express-session';
 
 @Controller('auth')
 export class AuthController {
@@ -32,10 +33,26 @@ export class AuthController {
     }
 
     @Post('logout')
-    logout(@Request() req){
-        req.session.destroy();
+    logout(@Request() req, @Res() res){
+        req.session.destroy((err) => {
+            if (err){
+                console.log('ERROR');
+                res.status(500)
+            }
+            else {
+                res.clearCookie('connect.sid', { path:'/'})
+                res.json({
+                    msg: 'Logout successful'
+                })
+            }
+        });
+    }
+
+    @Get('check')
+    checkAuthentication(@Request() req){
         return {
-            msg: 'Session destrouied'
+            isAuthenticated: req.isAuthenticated(),
+            user: req.user
         }
     }
 
