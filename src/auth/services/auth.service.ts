@@ -40,16 +40,6 @@ export class AuthService {
 
     }
 
-    
-    // login(dto: User): Observable<string>{
-    //     return this.verifyUser(dto.email, dto.password).pipe(
-    //         switchMap((user:User) => {
-    //             if (user){
-    //                 return from(this.jwt.signAsync({ user }))
-    //             }
-    //         })
-    //     );
-    // }
 
     verifyUser(email: string, password: string): Observable<User> {
         return from(this.userRepository.findOne({
@@ -72,7 +62,34 @@ export class AuthService {
             }))
     }
 
-    
+    findUserById(id: number): Observable<User>{
+        return from(
+            this.userRepository.findOne({
+                where:{ id },
+                relations: ['feedPosts']
+            })
+        ).pipe(
+            map((user: User) => {
+                delete user.password;
+                return user;
+            })
+        )
+    }
+
+
+
+    // login(dto: User): Observable<string>{
+    //     return this.verifyUser(dto.email, dto.password).pipe(
+    //         switchMap((user:User) => {
+    //             if (user){
+    //                 return from(this.jwt.signAsync({ user }))
+    //             }
+    //         })
+    //     );
+    // }
+
+
+
     // login(dto: User): Observable<string>{
     //     return from(this.userRepository.findOne({
     //         where: {
