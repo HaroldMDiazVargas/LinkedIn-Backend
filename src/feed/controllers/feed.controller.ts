@@ -6,8 +6,9 @@ import { DeleteResult, UpdateResult } from 'typeorm';
 import { AuthenticatedGuard, RolesGuard } from 'src/auth/guards';
 import { Roles } from 'src/auth/decorator/roles.decorator';
 import { Role } from 'src/auth/models/role.enum';
+import { IsCreatorGuard } from '../guards/is-creator.guard';
 
-@Roles(Role.ADMIN, Role.PREMIUM)
+@Roles(Role.ADMIN, Role.PREMIUM, Role.USER)
 @UseGuards(AuthenticatedGuard, RolesGuard)
 @Controller('feed')
 export class FeedController {
@@ -30,6 +31,7 @@ export class FeedController {
         return this.feedService.findPosts(take, skip);
     }
 
+    @UseGuards(IsCreatorGuard)
     @Put(':id')
     update(
         @Param('id') id: number,
@@ -38,6 +40,7 @@ export class FeedController {
         return this.feedService.updatePost(id, feedPost);
     }
 
+    @UseGuards(IsCreatorGuard)
     @Delete(':id')
     deletePost(
         @Param('id') id: number
