@@ -25,6 +25,7 @@ import { SessionSerializer } from './serializers/session.serializer';
     // })
   ],
   providers: [AuthService, LocalStrategy, SessionSerializer], //JwtStrategy
-  controllers: [AuthController]
+  controllers: [AuthController],
+  exports: [AuthService]
 })
 export class AuthModule {}
