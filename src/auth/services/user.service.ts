@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Observable, from, map } from 'rxjs';
+import { Observable, from, map, take } from 'rxjs';
 import { User } from '../models/user.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../models/user.entity';

@@ -1,7 +1,7 @@
-import { Body, Controller, Param, Put, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { UpdateResult } from 'typeorm';
-import { Observable, of, take, switchMap } from 'rxjs';
+import { Observable, of, take, switchMap, map } from 'rxjs';
 import { AuthenticatedGuard } from '../guards';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { isFileExtensionSafe, removeFile, saveImageToStorage } from '../helpers/image-storage';
@@ -38,5 +38,15 @@ export class UserController {
                 })
             );
             
+    }
+
+    @Get('image/')
+    findImage(@Req() req, @Res() res) : Observable<object>{
+        const userId = req.user.id;
+        return this.userService.findImageNameByUserId(userId).pipe(
+            switchMap((imageName: string) => {
+                return of(res.sendFile(imageName, { root: './images'}))
+            })
+        )
     }
 }
