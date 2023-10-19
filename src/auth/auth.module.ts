@@ -9,6 +9,7 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './strategies/local.strategy';
 import { SessionSerializer } from './serializers/session.serializer';
 import { UserService } from './services/user.service';
+import { UserController } from './controllers/user.controller';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { UserService } from './services/user.service';
     // })
   ],
   providers: [AuthService, LocalStrategy, SessionSerializer, UserService], //JwtStrategy
-  controllers: [AuthController],
+  controllers: [AuthController, UserController],
   exports: [AuthService, UserService]
 })
 export class AuthModule {}
