@@ -14,10 +14,9 @@ export class UserController {
         private userService: UserService
     ){}
 
-    @Put('image/:id')
+    @Put('upload')
     @UseInterceptors(FileInterceptor('file', saveImageToStorage))
-    uploadUserImage(
-        @Param('id') id: number, @UploadedFile() file: Express.Multer.File, @Req() req): 
+    uploadUserImage(@UploadedFile() file: Express.Multer.File, @Req() req): 
         Observable<UpdateResult | { error: string}> {
             const fileName = file?.filename;
             if (!fileName)
