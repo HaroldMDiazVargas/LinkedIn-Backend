@@ -49,4 +49,14 @@ export class UserController {
             })
         )
     }
+
+    @Get('image-name/')
+    findImageName(@Req() req) : Observable<{imageName: string}>{
+        const userId = req.user.id;
+        return this.userService.findImageNameByUserId(userId).pipe(
+            switchMap((imageName: string) => {
+                return of({ imageName })
+            })
+        )
+    }
 }
