@@ -46,7 +46,7 @@ export class AuthService {
             where: {
                 email
             },
-            select: ['id', 'firstName', 'lastName', 'email', 'password', 'role']
+            select: ['id', 'firstName', 'lastName', 'imagePath', 'email', 'password', 'role']
         })).pipe(
             switchMap((user: User) => {
                 if (!user) throw new ForbiddenException('Credentials incorrect');
