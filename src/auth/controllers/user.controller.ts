@@ -17,7 +17,7 @@ export class UserController {
     @Put('upload')
     @UseInterceptors(FileInterceptor('file', saveImageToStorage))
     uploadUserImage(@UploadedFile() file: Express.Multer.File, @Req() req): 
-        Observable<UpdateResult | { error: string}> {
+        Observable<{ modifiedFileName: string } | { error: string}> {
             const fileName = file?.filename;
             if (!fileName)
                 return of({
@@ -28,7 +28,11 @@ export class UserController {
                 switchMap((isFileLegit: boolean) => {
                     if (isFileLegit){
                         const userId = req.user.id;
-                        return this.userService.updateUserImageById(userId, fileName)
+                        req.user.imagePath = fileName                                               //Update req.user data!
+                        req.session.save();
+                        return this.userService.updateUserImageById(userId, fileName).pipe(
+                            map(() => ({ modifiedFileName: fileName }))
+                        )
                     }
                     removeFile(fullImagePath)
                     return of({
