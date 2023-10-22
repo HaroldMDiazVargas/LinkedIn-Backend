@@ -1,9 +1,8 @@
-import { FeedPost } from 'src/feed/models/post.interface';
-import { Role } from './role.enum';
+import { User } from './user.interface';
 
 export type FriendRequestStatus = 'pending' | 'accepted' | 'declined';
 
-export interface User {
+export interface FriendRequest {
     id?: number;
     status?: FriendRequestStatus;
     creator?: User;
