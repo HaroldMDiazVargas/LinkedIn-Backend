@@ -73,8 +73,6 @@ export class UserController {
 
     @Post('friend-request/send/:receiverId')
     sendConnectionRequest(@Param('receiverId') receiverStringId: string, @Req() req): Observable<FriendRequest | { error: string }>{
-        const receiverId = parseInt(receiverStringId);
-        const user = req.user;
-        return this.userService.sendConnectionRequest(receiverId, user);
+        return this.userService.sendConnectionRequest(parseInt(receiverStringId), req.user);
     }
 }

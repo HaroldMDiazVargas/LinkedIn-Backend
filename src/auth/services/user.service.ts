@@ -80,9 +80,5 @@ export class UserService {
                
             })
         )
-
-        // return from(this.friendRequestRepository.save({
-
-        // }))
     }
 }
