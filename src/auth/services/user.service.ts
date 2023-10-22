@@ -96,19 +96,29 @@ export class UserService {
         return this.findUserById(receiverId).pipe(
             switchMap((receiver: User) => {     
                 return from(this.friendRequestRepository.findOne({
+                    relations: ['creator', 'receiver'],
                     where: [
                         {
                             creator: currentUser,
                             receiver: {
                                 id: receiverId
                             }
+                        },
+                        {
+                            creator: {
+                                id: receiverId
+                            },
+                            receiver: currentUser
                         }
                     ]
 
                 }))
              }),
             switchMap((friendRequest: FriendRequest) => {
-                return of({ status: friendRequest.status})
+                if (friendRequest?.receiver.id === currentUser.id) {
+                    return of({ status: 'waiting-for-current-user-response'} as FriendRequestStatus)
+                }
+                return of({ status: friendRequest?.status || 'not-sent'})
             })
             
              )
