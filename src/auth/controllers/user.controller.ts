@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Put, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { UpdateResult } from 'typeorm';
 import { Observable, of, take, switchMap, map } from 'rxjs';
@@ -6,6 +6,8 @@ import { AuthenticatedGuard } from '../guards';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { isFileExtensionSafe, removeFile, saveImageToStorage } from '../helpers/image-storage';
 import { join } from 'path';
+import { User } from '../models/user.interface';
+import { FriendRequest } from '../models/friend-request.interface';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('user')
@@ -61,5 +63,18 @@ export class UserController {
                 return of({ imageName })
             })
         )
+    }
+
+    @Get(':userId')
+    findUserById(@Param('userId') userStringId: string): Observable<User>{
+        const userId = parseInt(userStringId);
+        return this.userService.findUserById(userId);
+    }
+
+    @Post('friend-request/send/:receiverId')
+    sendConnectionRequest(@Param('receiverId') receiverStringId: string, @Req() req): Observable<FriendRequest | { error: string }>{
+        const receiverId = parseInt(receiverStringId);
+        const user = req.user;
+        return this.userService.sendConnectionRequest(receiverId, user);
     }
 }

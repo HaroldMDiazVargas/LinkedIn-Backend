@@ -10,10 +10,11 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { SessionSerializer } from './serializers/session.serializer';
 import { UserService } from './services/user.service';
 import { UserController } from './controllers/user.controller';
+import { FriendRequestEntity } from './models/friend-request.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([UserEntity, FriendRequestEntity]),
     PassportModule.registerAsync({
       useFactory: () => ({
         session: true
