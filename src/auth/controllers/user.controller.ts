@@ -7,7 +7,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { isFileExtensionSafe, removeFile, saveImageToStorage } from '../helpers/image-storage';
 import { join } from 'path';
 import { User } from '../models/user.interface';
-import { FriendRequest } from '../models/friend-request.interface';
+import { FriendRequest, FriendRequestStatus } from '../models/friend-request.interface';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('user')
@@ -74,5 +74,11 @@ export class UserController {
     @Post('friend-request/send/:receiverId')
     sendConnectionRequest(@Param('receiverId') receiverStringId: string, @Req() req): Observable<FriendRequest | { error: string }>{
         return this.userService.sendConnectionRequest(parseInt(receiverStringId), req.user);
+    }
+
+    @Get('friend-request/status/:receiverId')
+    getFriendRequestStatus(@Param('receiverId') receiverStringId: string, @Req() req): Observable<FriendRequestStatus>{
+        const receiverId = parseInt(receiverStringId);
+        return this.userService.getFriendRequestStatus(receiverId, req.user);
     }
 }

@@ -4,7 +4,7 @@ import { User } from '../models/user.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../models/user.entity';
 import { Repository, UpdateResult } from 'typeorm';
-import { FriendRequest } from '../models/friend-request.interface';
+import { FriendRequest, FriendRequestStatus } from '../models/friend-request.interface';
 import { FriendRequestEntity } from '../models/friend-request.entity';
 
 @Injectable()
@@ -43,6 +43,31 @@ export class UserService {
         )
     }
 
+    hasRequestBeenSentOrReceived(receiverId: number, creator: User) : Observable<boolean>{
+        return from(this.friendRequestRepository.findOne({
+            where: [
+                { 
+                    receiver: {                                             //Doesn't accept UserEntity {...}
+                        id: receiverId
+                    },
+                    creator
+                },
+                {
+                    receiver: creator,
+                    creator: {
+                        id: receiverId
+                    }
+                }
+            ]
+        })).pipe(
+            switchMap((friendRequest: FriendRequest) => {
+                if (!friendRequest)
+                    return of(false)
+                return of(true)
+            })
+        )
+    }
+
     sendConnectionRequest(receiverId: number, creator: User): Observable<FriendRequest | { error: string }>{
         if (creator.id === receiverId) return of({ error: 'Can not send request to yourself'});
         
@@ -50,24 +75,9 @@ export class UserService {
             switchMap((receiver: User) => {                                      // UserEntity { ... }
                 if (!receiver)
                     return of({ error: "The user receiver doesn't exist"})
-                return from(this.friendRequestRepository.findOne({
-                    where: [
-                        { 
-                            receiver: {                                             //Doesn't accept UserEntity {...}
-                                id: receiverId
-                            },
-                            creator
-                        },
-                        {
-                            receiver: creator,
-                            creator: {
-                                id: receiverId
-                            }
-                        }
-                    ]
-                })).pipe(
-                    switchMap((friendRequest: FriendRequest) => {
-                        if (friendRequest)
+                return this.hasRequestBeenSentOrReceived(receiverId, creator).pipe(
+                    switchMap((hasRequestBeenSentOrReceived: boolean) => {
+                        if (hasRequestBeenSentOrReceived)
                             return of({ error: "Friend request already sent "})
                         return from(this.friendRequestRepository.save({
                             creator: creator as User,
@@ -80,5 +90,27 @@ export class UserService {
                
             })
         )
+    }
+
+    getFriendRequestStatus(receiverId: number, currentUser: User): Observable<FriendRequestStatus>{
+        return this.findUserById(receiverId).pipe(
+            switchMap((receiver: User) => {     
+                return from(this.friendRequestRepository.findOne({
+                    where: [
+                        {
+                            creator: currentUser,
+                            receiver: {
+                                id: receiverId
+                            }
+                        }
+                    ]
+
+                }))
+             }),
+            switchMap((friendRequest: FriendRequest) => {
+                return of({ status: friendRequest.status})
+            })
+            
+             )
     }
 }
