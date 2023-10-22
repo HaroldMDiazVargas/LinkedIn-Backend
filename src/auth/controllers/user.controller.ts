@@ -81,4 +81,15 @@ export class UserController {
         const receiverId = parseInt(receiverStringId);
         return this.userService.getFriendRequestStatus(receiverId, req.user);
     }
+
+    @Put('friend-request/:friendRequestId')
+    respondToFriendRequest(
+        @Param('friendRequestId') friendRequestStringId: string,
+        @Body() statusResponse: FriendRequestStatus,
+        @Req() req
+    ): Observable<FriendRequestStatus | { error: string }>{
+        const friendRequestId = parseInt(friendRequestStringId);
+        const receiverId = req.user.id;
+        return this.userService.respondToFriendRequest(friendRequestId, statusResponse, receiverId);
+    }
 }

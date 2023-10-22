@@ -113,4 +113,34 @@ export class UserService {
             
              )
     }
+
+    findFriendRequestById(id: number): Observable<FriendRequest>{
+        return from(
+            this.friendRequestRepository.findOne({
+                relations:['receiver'],
+                where:{ id }
+            })
+        )
+    }
+
+    respondToFriendRequest(friendRequestId: number, statusResponse: FriendRequestStatus, receiverId: number) : Observable<FriendRequestStatus | { error: string }>{
+        return from(this.findFriendRequestById(friendRequestId)).pipe(
+            switchMap((friendRequest: FriendRequest) => {
+                if (!friendRequest)
+                    return of({ error: "The friend request doesn't exist"})
+                if (friendRequest.receiver.id !== receiverId)
+                    return of({ error: "Don't have permissions"})
+                if (friendRequest.status !== 'pending')
+                    return of({ error: "The request was already responded"})
+                return from(this.friendRequestRepository.update(friendRequestId, {
+                    status: statusResponse.status
+                })).pipe(
+                    switchMap(() => {
+                        return of(statusResponse)
+                    })
+                )
+            })
+        )
+
+    }
 }
