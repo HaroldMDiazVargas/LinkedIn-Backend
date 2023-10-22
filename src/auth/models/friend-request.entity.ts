@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { UserEntity } from './user.entity';
-import { FriendRequestStatus } from './friend-request.interface';
+import { FriendRequest_Status } from './friend-request.interface';
 
 @Entity('connections')
 export class FriendRequestEntity {
@@ -8,7 +8,7 @@ export class FriendRequestEntity {
     id: number;
 
     @Column()
-    status: FriendRequestStatus;
+    status: FriendRequest_Status;
 
     @ManyToOne(() => UserEntity, (userEntity) => userEntity.sentFriendRequests)
     creator: UserEntity;
