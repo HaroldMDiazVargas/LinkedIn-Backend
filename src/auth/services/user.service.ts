@@ -143,4 +143,12 @@ export class UserService {
         )
 
     }
+
+    getUserFriendRequests(receiver: User): Observable<FriendRequest[]>{
+        return from(this.friendRequestRepository.find({
+            where: {
+                receiver
+            }
+        }))
+    }
 }

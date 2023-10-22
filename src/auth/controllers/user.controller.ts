@@ -92,4 +92,9 @@ export class UserController {
         const receiverId = req.user.id;
         return this.userService.respondToFriendRequest(friendRequestId, statusResponse, receiverId);
     }
+
+    @Get('friend-request/me/received-requests')
+    getUserFriendRequests(@Req() req) : Observable<FriendRequest[]>{
+        return this.userService.getUserFriendRequests(req.user);
+    }
 }
