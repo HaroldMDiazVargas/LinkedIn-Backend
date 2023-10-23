@@ -100,14 +100,10 @@ export class UserService {
                     where: [
                         {
                             creator: currentUser,
-                            receiver: {
-                                id: receiverId
-                            }
+                            receiverId
                         },
                         {
-                            creator: {
-                                id: receiverId
-                            },
+                            creatorId: receiverId,
                             receiver: currentUser
                         }
                     ]
