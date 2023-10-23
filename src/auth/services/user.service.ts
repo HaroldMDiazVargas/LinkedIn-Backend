@@ -111,7 +111,7 @@ export class UserService {
                 }))
              }),
             switchMap((friendRequest: FriendRequest) => {
-                if (friendRequest?.receiver.id === currentUser.id) {
+                if (friendRequest?.receiver.id === currentUser.id && friendRequest.status === 'pending') {
                     return of({ status: 'waiting-for-current-user-response'} as FriendRequestStatus)
                 }
                 return of({ status: friendRequest?.status || 'not-sent'})
