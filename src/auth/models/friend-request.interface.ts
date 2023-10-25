@@ -9,7 +9,9 @@ export interface FriendRequestStatus {
 export interface FriendRequest {
     id?: number;
     status?: FriendRequest_Status;
+    creatorId?: number;
     creator?: User;
+    receiverId?: number;
     receiver?: User;
     createdAt?: Date;
     updatedAt?: Date;
