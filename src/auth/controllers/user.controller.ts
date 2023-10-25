@@ -77,7 +77,7 @@ export class UserController {
     }
 
     @Get('friend-request/status/:receiverId')
-    getFriendRequestStatus(@Param('receiverId') receiverStringId: string, @Req() req): Observable<FriendRequestStatus>{
+    getFriendRequestStatus(@Param('receiverId') receiverStringId: string, @Req() req): Observable<FriendRequest>{
         const receiverId = parseInt(receiverStringId);
         return this.userService.getFriendRequestStatus(receiverId, req.user);
     }
@@ -90,7 +90,7 @@ export class UserController {
     ): Observable<FriendRequestStatus | { error: string }>{
         const friendRequestId = parseInt(friendRequestStringId);
         const receiverId = req.user.id;
-        return this.userService.respondToFriendRequest(friendRequestId, statusResponse, receiverId);
+        return this.userService.respondToFriendRequest(friendRequestId, statusResponse, receiverId); 
     }
 
     @Get('friend-request/me/received-requests')

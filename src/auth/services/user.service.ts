@@ -47,16 +47,12 @@ export class UserService {
         return from(this.friendRequestRepository.findOne({
             where: [
                 { 
-                    receiver: {                                             //Doesn't accept UserEntity {...}
-                        id: receiverId
-                    },
+                    receiverId: receiverId,                                           //Doesn't accept UserEntity {...}
                     creator
                 },
                 {
                     receiver: creator,
-                    creator: {
-                        id: receiverId
-                    }
+                    creatorId: receiverId
                 }
             ]
         })).pipe(
@@ -80,8 +76,8 @@ export class UserService {
                         if (hasRequestBeenSentOrReceived)
                             return of({ error: "Friend request already sent "})
                         return from(this.friendRequestRepository.save({
-                            creator: creator as User,
-                            receiver: receiverId as User,
+                            creatorId: creator.id,
+                            receiverId: receiverId,
                             status:'pending'
                         }))
                     })
@@ -92,29 +88,31 @@ export class UserService {
         )
     }
 
-    getFriendRequestStatus(receiverId: number, currentUser: User): Observable<FriendRequestStatus>{
+    getFriendRequestStatus(receiverId: number, currentUser: User): Observable<FriendRequest>{
+        if (receiverId === currentUser.id)
+            return of({ status: 'accepted'})
         return this.findUserById(receiverId).pipe(
-            switchMap((receiver: User) => {     
+            switchMap((receiver: User) => {    
                 return from(this.friendRequestRepository.findOne({
                     relations: ['creator', 'receiver'],
                     where: [
                         {
-                            creator: currentUser,
+                            creatorId: currentUser.id,
                             receiverId
                         },
                         {
                             creatorId: receiverId,
-                            receiver: currentUser
+                            receiverId: currentUser.id
                         }
                     ]
 
                 }))
              }),
             switchMap((friendRequest: FriendRequest) => {
-                if (friendRequest?.receiver.id === currentUser.id && friendRequest.status === 'pending') {
-                    return of({ status: 'waiting-for-current-user-response'} as FriendRequestStatus)
+                if ((friendRequest?.receiverId === currentUser.id) && friendRequest?.status === 'pending') {
+                    return of({ id:friendRequest.id, status: 'waiting-for-current-user-response'} as FriendRequestStatus)
                 }
-                return of({ status: friendRequest?.status || 'not-sent'})
+                return of({  id: friendRequest?.id, status: friendRequest?.status || 'not-sent'})
             })
             
              )
