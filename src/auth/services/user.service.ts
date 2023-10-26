@@ -150,8 +150,10 @@ export class UserService {
 
     getUserFriendRequests(receiver: User): Observable<FriendRequest[]>{
         return from(this.friendRequestRepository.find({
+            relations: ['creator'],
             where: {
-                receiver
+                receiver,
+                status: 'pending'
             }
         }))
     }
